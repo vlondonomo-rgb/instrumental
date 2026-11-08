@@ -651,13 +651,24 @@ function colorCat(){
 function pintarFoto(){
   const wrap = document.getElementById("fotoWrap");
   const col = colorCat();
-  // MODO DESCRIPCIÓN: mostramos la pista grande como protagonista (sin foto)
-  wrap.innerHTML =
+
+  // Bloque de respaldo (descripción) que se muestra si NO hay foto o si falla.
+  const respaldo =
     `<div class="foto-placeholder" style="background:linear-gradient(135deg,${col},${sombra(col)})">
        <div class="big">🔎</div>
        <div style="font-size:1.05rem;font-weight:700;line-height:1.4;padding:0 6px;">${actual.pista}</div>
        <div class="nm">¿Qué instrumento / patrón es? Adívinalo 👇</div>
      </div>`;
+
+  // Si el elemento no tiene archivo de imagen definido, mostramos el respaldo y listo.
+  if(!actual.img){ wrap.innerHTML = respaldo; return; }
+
+  // Intentamos mostrar la FOTO. Clave: el juego NUNCA se queda pegado,
+  // porque si la imagen falla (onerror) mostramos el respaldo al instante.
+  wrap.innerHTML = `<div class="foto-box"><img id="laFoto" alt="${actual.nombre}"></div>`;
+  const img = document.getElementById("laFoto");
+  img.onerror = ()=>{ wrap.innerHTML = respaldo; };   // si la foto no carga -> descripción
+  img.src = "imagenes/" + actual.img;
 }
 function sombra(hex){
   // oscurece un poco el color para el degradado
