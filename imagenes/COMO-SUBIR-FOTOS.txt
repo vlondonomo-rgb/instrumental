@@ -1,0 +1,79 @@
+================================================================
+  CÓMO AGREGAR TUS FOTOS REALES AL JUEGO
+================================================================
+
+El juego funciona DESDE YA sin fotos (muestra la pista y un recuadro
+"Foto pendiente"). Para que aparezcan las fotos reales de tu profe,
+solo tienes que poner cada imagen en ESTA carpeta (imagenes/) con el
+nombre EXACTO que aparece abajo.
+
+Formato: JPG o PNG. Si usas PNG, cambia la extensión en el archivo
+datos.js (o simplemente guarda como .jpg).
+
+----------------------------------------------------------------
+  SECCIÓN 1 · INSTRUMENTAL
+----------------------------------------------------------------
+CORTE
+  bisturi4.jpg ............ Bisturí #4
+  bisturi3.jpg ............ Bisturí #3
+  mayo.jpg ................ Tijera de Mayo
+
+DISECCIÓN
+  metzembaum.jpg .......... Tijera de Metzembaum
+  tijera_diseccion.jpg .... Tijera de disección
+  adson.jpg ............... Pinza de Adson
+
+HEMOSTASIA
+  mosquito.jpg ............ Mosquito (Halstead)
+  rochester.jpg ........... Rochester-Pean
+  kelly.jpg ............... Kelly
+  kocher_hemo.jpg ......... Kocher (hemostasia)
+
+CAMPO
+  backhaus.jpg ............ Backhaus
+  kirmisson.jpg ........... Kirmisson Jones
+  doyen_campo.jpg ......... Doyen (campo)
+  roeder.jpg .............. Roeder
+
+SEPARADORES
+  gelpi.jpg ............... Gelpi
+  weitlaner.jpg ........... Weitlaner
+  senn.jpg ................ Senn Miller
+  farabeuf.jpg ............ Farabeuf
+  volkmann.jpg ............ Volkmann
+
+SUTURA
+  portaagujas.jpg ......... Portaagujas Mayo
+  tijera_sutura.jpg ....... Tijeras de sutura
+
+AGARRE
+  allis.jpg ............... Allis
+  babcock.jpg ............. Babcock
+  kocher_agarre.jpg ....... Kocher (agarre)
+  garra.jpg ............... Pinza de disección con garra
+  singarra.jpg ............ Pinza de disección sin garra
+
+----------------------------------------------------------------
+  SECCIÓN 2 · PATRONES DE SUTURA
+----------------------------------------------------------------
+  p_simple.jpg ............ Punto simple interrumpido
+  p_continua.jpg .......... Sutura continua simple
+  p_ford.jpg .............. Ford interlocking
+  p_subcuticular.jpg ...... Subcuticular / Intradérmico
+  p_horizontal.jpg ........ Colchonero horizontal
+  p_vertical.jpg .......... Colchonero vertical
+  p_x.jpg ................. Punto en X (cruciforme)
+  p_lembert.jpg ........... Lembert
+  p_halsted.jpg ........... Halsted
+  p_cushing.jpg ........... Cushing
+  p_connell.jpg ........... Connell
+  p_jareta.jpg ............ Jareta (Pursestring)
+  p_gambee.jpg ............ Gambee
+  p_cross.jpg ............. Sutura Cross
+  p_donati.jpg ............ Donati
+  p_sarnoff.jpg ........... Sarnoff
+
+================================================================
+TIP: puedes recortar cada instrumento de las diapositivas de la
+profe y guardarlo con su nombre. ¡Y listo, aparece solo en el juego!
+================================================================

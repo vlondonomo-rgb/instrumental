@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ahorcado Quirúrgico 🔪🧵</title>
+<style>
+  :root{
+    --corte:#A0288F; --diseccion:#5E2D91; --hemostasia:#2E4A9E;
+    --campo:#2F93A6; --separadores:#3C9D6E; --sutura:#5AB031; --agarre:#7FB8D8;
+    --rosa:#e8a9c8; --fondo:#f6eef3; --texto:#3a2b36;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:"Segoe UI",system-ui,sans-serif;
+    background:linear-gradient(160deg,#f6eef3 0%,#eef2f7 100%);
+    color:var(--texto); min-height:100vh;
+  }
+  header{
+    text-align:center; padding:22px 16px 10px;
+  }
+  header h1{ margin:0; font-size:1.7rem; }
+  header p{ margin:6px 0 0; color:#7a6b74; font-size:.95rem; }
+
+  .wrap{ max-width:720px; margin:0 auto; padding:12px 16px 60px; }
+
+  /* Botones generales */
+  .btn{
+    border:none; border-radius:12px; padding:12px 18px; font-size:1rem;
+    cursor:pointer; color:#fff; font-weight:600; transition:transform .1s, filter .15s;
+  }
+  .btn:hover{ filter:brightness(1.08); }
+  .btn:active{ transform:scale(.97); }
+  .btn.ghost{ background:#fff; color:var(--texto); border:2px solid #e0d3dc; }
+
+  /* Pantallas */
+  .screen{ display:none; animation:fade .3s; }
+  .screen.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+  /* Menú de secciones */
+  .seccion-cards{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:10px; }
+  .sec-card{
+    border-radius:18px; padding:26px 18px; color:#fff; cursor:pointer;
+    text-align:center; font-size:1.15rem; font-weight:700; box-shadow:0 6px 16px rgba(0,0,0,.12);
+    transition:transform .12s;
+  }
+  .sec-card:hover{ transform:translateY(-3px); }
+  .sec-card small{ display:block; font-weight:400; font-size:.8rem; opacity:.9; margin-top:8px; }
+  .sec-instrumental{ background:linear-gradient(135deg,#A0288F,#2E4A9E); }
+  .sec-patrones{ background:linear-gradient(135deg,#3C9D6E,#5AB031); }
+
+  /* Categorías */
+  .cat-grid{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:14px; }
+  .cat-chip{
+    border:none; border-radius:30px; padding:11px 20px; color:#fff; font-weight:600;
+    cursor:pointer; font-size:.95rem; box-shadow:0 3px 8px rgba(0,0,0,.12);
+  }
+  .cat-chip.todas{ background:#3a2b36; }
+
+  /* Tarjeta de juego / flip */
+  .card-scene{ perspective:1200px; margin:6px auto 0; }
+  .card{
+    position:relative; width:100%; min-height:260px; transform-style:preserve-3d;
+    transition:transform .7s; 
+  }
+  .card.flipped{ transform:rotateY(180deg); }
+  .face{
+    position:absolute; inset:0; backface-visibility:hidden;
+    border-radius:18px; background:#fff; box-shadow:0 8px 22px rgba(0,0,0,.12);
+    padding:16px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .face.back{ transform:rotateY(180deg); text-align:center; }
+
+  .foto-box{
+    width:100%; max-height:240px; min-height:200px; border-radius:12px; overflow:hidden;
+    display:flex; align-items:center; justify-content:center; background:#f3f3f6;
+  }
+  .foto-box img{ max-width:100%; max-height:240px; object-fit:contain; }
+  .foto-placeholder{
+    width:100%; min-height:200px; border-radius:12px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; color:#fff; text-align:center; padding:18px;
+  }
+  .foto-placeholder .big{ font-size:2.4rem; }
+  .foto-placeholder .nm{ font-size:.85rem; opacity:.9; margin-top:8px; }
+
+  .cat-badge{
+    display:inline-block; padding:4px 14px; border-radius:20px; color:#fff;
+    font-size:.8rem; font-weight:700; margin-bottom:10px;
+  }
+
+  /* Palabra / guiones */
+  .palabra{
+    display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin:18px 0 10px;
+  }
+  .letra-slot{
+    min-width:26px; height:38px; border-bottom:3px solid #b9a7b3; font-size:1.3rem;
+    display:flex; align-items:center; justify-content:center; font-weight:700; text-transform:uppercase;
+  }
+  .letra-slot.espacio{ border-bottom:none; min-width:14px; }
+  .letra-slot.simbolo{ border-bottom:none; }
+  .letra-slot.ok{ color:#2e8b3d; }
+
+  .pista{ font-size:.9rem; color:#6d5f68; text-align:center; margin:4px 0 12px; font-style:italic; }
+
+  /* Teclado */
+  .teclado{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:4px; }
+  .tecla{
+    width:38px; height:44px; border:none; border-radius:9px; background:#fff; color:var(--texto);
+    font-weight:700; font-size:1rem; cursor:pointer; box-shadow:0 2px 5px rgba(0,0,0,.1);
+    text-transform:uppercase;
+  }
+  .tecla:hover:not(:disabled){ background:#f0e6ed; }
+  .tecla.bien{ background:#8ad18f; color:#14531b; }
+  .tecla.mal{ background:#e79a9a; color:#6b1515; }
+  .tecla:disabled{ cursor:default; opacity:.85; }
+
+  /* Vidas / monito */
+  .estado{ display:flex; align-items:center; justify-content:space-between; margin:10px 0; }
+  .vidas{ font-size:1.5rem; letter-spacing:2px; }
+  .progreso{ font-size:.85rem; color:#7a6b74; }
+
+  .hangman{ font-size:3rem; text-align:center; margin:4px 0; min-height:3rem; }
+
+  /* Mensajes */
+  .msg{ text-align:center; font-size:1.05rem; font-weight:700; margin:10px 0; min-height:1.4rem; }
+  .msg.win{ color:#2e8b3d; }
+  .msg.lose{ color:#c0392b; }
+
+  .acciones{ display:flex; gap:10px; justify-content:center; margin-top:14px; flex-wrap:wrap; }
+  .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+
+  .nombre-final{ font-size:1.3rem; font-weight:800; margin:6px 0; }
+  .funcion-txt{ font-size:1rem; line-height:1.5; color:#4a3b44; max-width:90%; }
+  .flip-hint{ font-size:.8rem; color:#8a7b84; margin-top:12px; }
+
+  .final-box{ text-align:center; padding:30px 10px; }
+  .final-box .score{ font-size:3rem; font-weight:800; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🔪 Ahorcado Quirúrgico 🧵</h1>
+  <p>Instrumental y patrones de sutura · adivina y voltea la ficha</p>
+</header>
+
+<div class="wrap">
+
+  <!-- PANTALLA: elegir sección -->
+  <section id="s-secciones" class="screen active">
+    <div class="seccion-cards">
+      <div class="sec-card sec-instrumental" onclick="abrirInstrumental()">
+        🔧 Instrumental quirúrgico
+        <small>Por función: corte, disección, hemostasia…</small>
+      </div>
+      <div class="sec-card sec-patrones" onclick="iniciarPatrones()">
+        🧵 Patrones de sutura
+        <small>Simple, colchonero, Lembert, Connell…</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- PANTALLA: elegir categoría (instrumental) -->
+  <section id="s-categorias" class="screen">
+    <div class="topbar">
+      <button class="btn ghost" onclick="ir('s-secciones')">← Volver</button>
+      <strong>Elige una función</strong>
+      <span></span>
+    </div>
+    <div class="cat-grid" id="catGrid"></div>
+    <div style="text-align:center;margin-top:18px;">
+      <button class="cat-chip todas" onclick="iniciarInstrumental('todas')">⭐ Todas mezcladas</button>
+    </div>
+  </section>
+
+  <!-- PANTALLA: juego -->
+  <section id="s-juego" class="screen">
+    <div class="topbar">
+      <button class="btn ghost" onclick="salirJuego()">← Salir</button>
+      <span class="progreso" id="progreso"></span>
+    </div>
+
+    <div class="card-scene">
+      <div class="card" id="card">
+        <!-- FRENTE: foto + ahorcado -->
+        <div class="face front">
+          <div id="catBadge" class="cat-badge" style="display:none"></div>
+          <div id="fotoWrap" style="width:100%"></div>
+        </div>
+        <!-- DORSO: para qué sirve -->
+        <div class="face back">
+          <div id="catBadge2" class="cat-badge" style="display:none"></div>
+          <div class="nombre-final" id="nombreFinal"></div>
+          <div class="funcion-txt" id="funcionTxt"></div>
+          <div class="flip-hint">💡 ¿Para qué sirve?</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="zonaJuego">
+      <div class="hangman" id="hangman"></div>
+      <div class="palabra" id="palabra"></div>
+      <div class="pista" id="pista"></div>
+      <div class="estado">
+        <span class="vidas" id="vidas"></span>
+        <span class="progreso" id="intentos"></span>
+      </div>
+      <div class="msg" id="msg"></div>
+      <div class="teclado" id="teclado"></div>
+    </div>
+
+    <div class="acciones" id="accionesPost" style="display:none">
+      <button class="btn" style="background:#5E2D91" onclick="voltear()">🔄 Ver/ocultar función</button>
+      <button class="btn" style="background:#3C9D6E" onclick="siguiente()">➡️ Siguiente</button>
+    </div>
+  </section>
+
+  <!-- PANTALLA: final -->
+  <section id="s-final" class="screen">
+    <div class="final-box">
+      <div class="score" id="scoreFinal"></div>
+      <p id="scoreTxt"></p>
+      <div class="acciones">
+        <button class="btn" style="background:#A0288F" onclick="repetirMazo()">🔁 Repetir</button>
+        <button class="btn" style="background:#2E4A9E" onclick="ir('s-secciones')">🏠 Menú</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script src="datos.js"></script>
+<script>
+/* ============ ESTADO ============ */
+let mazo = [];           // elementos de la ronda
+let idx = 0;             // índice actual
+let actual = null;       // elemento actual
+let adivinadas = new Set();
+let falladas = new Set();
+let vidasMax = 6;
+let aciertos = 0;
+const MONITO = ["😀","😟","😧","😰","😵","💀","⚰️"]; // segun fallos
+
+const ABC = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("");
+
+/* ============ NAVEGACIÓN ============ */
+function ir(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo(0,0);
+}
+
+function abrirInstrumental(){
+  const g = document.getElementById("catGrid");
+  g.innerHTML = "";
+  Object.keys(CATEGORIAS).forEach(k=>{
+    const c = CATEGORIAS[k];
+    const b = document.createElement("button");
+    b.className = "cat-chip";
+    b.style.background = c.color;
+    b.textContent = c.nombre;
+    b.onclick = ()=> iniciarInstrumental(k);
+    g.appendChild(b);
+  });
+  ir("s-categorias");
+}
+
+/* ============ INICIAR RONDAS ============ */
+function barajar(a){ return a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]); }
+
+function iniciarInstrumental(cat){
+  let lista = INSTRUMENTAL.slice();
+  if(cat !== "todas") lista = lista.filter(i=>i.categoria===cat);
+  mazo = barajar(lista);
+  arrancar();
+}
+function iniciarPatrones(){
+  mazo = barajar(PATRONES.slice());
+  arrancar();
+}
+function repetirMazo(){ mazo = barajar(mazo); arrancar(); }
+
+function arrancar(){
+  idx = 0; aciertos = 0;
+  ir("s-juego");
+  cargar();
+}
+
+/* ============ CARGAR ELEMENTO ============ */
+function cargar(){
+  actual = mazo[idx];
+  adivinadas = new Set();
+  falladas = new Set();
+
+  document.getElementById("card").classList.remove("flipped");
+  document.getElementById("accionesPost").style.display = "none";
+  document.getElementById("zonaJuego").style.display = "block";
+  document.getElementById("msg").textContent = "";
+  document.getElementById("msg").className = "msg";
+  document.getElementById("progreso").textContent = `Ficha ${idx+1} de ${mazo.length}`;
+
+  // categoría badge
+  const badge = document.getElementById("catBadge");
+  const badge2 = document.getElementById("catBadge2");
+  if(actual.categoria){
+    const c = CATEGORIAS[actual.categoria];
+    badge.style.display = badge2.style.display = "inline-block";
+    badge.textContent = badge2.textContent = c.nombre;
+    badge.style.background = badge2.style.background = c.color;
+  } else {
+    badge.style.display = badge2.style.display = "none";
+  }
+
+  // foto (o placeholder si no existe el archivo)
+  pintarFoto();
+
+  // dorso
+  document.getElementById("nombreFinal").textContent = actual.nombre;
+  document.getElementById("funcionTxt").textContent = actual.funcion;
+
+  renderPalabra();
+  renderTeclado();
+  renderEstado();
+}
+
+function colorCat(){
+  return actual.categoria ? CATEGORIAS[actual.categoria].color : "#5AB031";
+}
+
+function pintarFoto(){
+  const wrap = document.getElementById("fotoWrap");
+  const col = colorCat();
+  // intentamos cargar la imagen; si falla, mostramos placeholder bonito
+  wrap.innerHTML = `<div class="foto-box"><img id="laFoto" alt="instrumento"></div>`;
+  const img = document.getElementById("laFoto");
+  img.onerror = ()=>{
+    wrap.innerHTML =
+      `<div class="foto-placeholder" style="background:linear-gradient(135deg,${col},${sombra(col)})">
+         <div class="big">📷</div>
+         <div>Foto pendiente</div>
+         <div class="nm">Coloca <b>imagenes/${actual.img}</b><br>¡Mientras, adivina con la pista! 👇</div>
+       </div>`;
+  };
+  img.src = "imagenes/" + actual.img;
+}
+function sombra(hex){
+  // oscurece un poco el color para el degradado
+  const n = parseInt(hex.slice(1),16);
+  let r=(n>>16)-30, g=((n>>8)&255)-30, b=(n&255)-30;
+  r=Math.max(0,r); g=Math.max(0,g); b=Math.max(0,b);
+  return `rgb(${r},${g},${b})`;
+}
+
+/* ============ PALABRA ============ */
+function renderPalabra(){
+  const cont = document.getElementById("palabra");
+  cont.innerHTML = "";
+  for(const ch of actual.nombre){
+    const up = ch.toUpperCase();
+    const slot = document.createElement("div");
+    if(ch === " "){ slot.className="letra-slot espacio"; }
+    else if(!ABC.includes(up)){ // signos, números, paréntesis, #
+      slot.className="letra-slot simbolo"; slot.textContent = ch;
+    } else {
+      slot.className="letra-slot";
+      if(adivinadas.has(up)){ slot.textContent = ch; slot.classList.add("ok"); }
+    }
+    cont.appendChild(slot);
+  }
+  document.getElementById("pista").textContent = "🔎 " + actual.pista;
+}
+
+/* ============ TECLADO ============ */
+function renderTeclado(){
+  const t = document.getElementById("teclado");
+  t.innerHTML = "";
+  ABC.forEach(l=>{
+    const b = document.createElement("button");
+    b.className="tecla"; b.textContent=l; b.id="k"+l;
+    b.onclick = ()=> jugar(l);
+    t.appendChild(b);
+  });
+}
+
+function jugar(l){
+  if(adivinadas.has(l) || falladas.has(l)) return;
+  const enPalabra = actual.nombre.toUpperCase().includes(l);
+  const k = document.getElementById("k"+l);
+  if(enPalabra){
+    adivinadas.add(l);
+    k.classList.add("bien"); k.disabled=true;
+    renderPalabra();
+    if(completa()) ganar();
+  } else {
+    falladas.add(l);
+    k.classList.add("mal"); k.disabled=true;
+    renderEstado();
+    if(falladas.size >= vidasMax) perder();
+  }
+}
+
+function completa(){
+  for(const ch of actual.nombre){
+    const up = ch.toUpperCase();
+    if(ABC.includes(up) && !adivinadas.has(up)) return false;
+  }
+  return true;
+}
+
+function renderEstado(){
+  const restan = vidasMax - falladas.size;
+  document.getElementById("vidas").textContent = "❤️".repeat(restan) + "🖤".repeat(falladas.size);
+  document.getElementById("intentos").textContent = `Errores: ${falladas.size}/${vidasMax}`;
+  document.getElementById("hangman").textContent = MONITO[Math.min(falladas.size, MONITO.length-1)];
+}
+
+/* ============ GANAR / PERDER ============ */
+function ganar(){
+  aciertos++;
+  const m = document.getElementById("msg");
+  m.textContent = "✅ ¡Correcto! " + actual.nombre;
+  m.className = "msg win";
+  bloquearTeclado();
+  setTimeout(()=>{ voltear(true); mostrarAcciones(); }, 650);
+}
+function perder(){
+  // revelar
+  for(const ch of actual.nombre){ const up=ch.toUpperCase(); if(ABC.includes(up)) adivinadas.add(up); }
+  renderPalabra();
+  const m = document.getElementById("msg");
+  m.textContent = "💀 Era: " + actual.nombre;
+  m.className = "msg lose";
+  bloquearTeclado();
+  setTimeout(()=>{ voltear(true); mostrarAcciones(); }, 900);
+}
+function bloquearTeclado(){ document.querySelectorAll(".tecla").forEach(b=>b.disabled=true); }
+function mostrarAcciones(){ document.getElementById("accionesPost").style.display = "flex"; }
+
+/* ============ FLIP ============ */
+function voltear(forzarMostrar){
+  const card = document.getElementById("card");
+  if(forzarMostrar) card.classList.add("flipped");
+  else card.classList.toggle("flipped");
+}
+
+/* ============ SIGUIENTE / FIN ============ */
+function siguiente(){
+  idx++;
+  if(idx >= mazo.length) return fin();
+  cargar();
+}
+function fin(){
+  ir("s-final");
+  const pct = Math.round(aciertos/mazo.length*100);
+  document.getElementById("scoreFinal").textContent = `${aciertos}/${mazo.length}`;
+  let txt = `Acertaste el ${pct}% `;
+  if(pct===100) txt += "🏆 ¡Perfecto, crack!";
+  else if(pct>=70) txt += "💪 ¡Muy bien!";
+  else if(pct>=40) txt += "📚 Sigue repasando.";
+  else txt += "🔁 ¡A darle otra vuelta!";
+  document.getElementById("scoreTxt").textContent = txt;
+}
+function salirJuego(){ ir("s-secciones"); }
+
+/* teclado físico */
+document.addEventListener("keydown", e=>{
+  if(!document.getElementById("s-juego").classList.contains("active")) return;
+  const l = e.key.toUpperCase();
+  if(ABC.includes(l)) jugar(l);
+});
+</script>
+</body>
+</html>
