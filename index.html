@@ -330,18 +330,13 @@ function colorCat(){
 function pintarFoto(){
   const wrap = document.getElementById("fotoWrap");
   const col = colorCat();
-  // intentamos cargar la imagen; si falla, mostramos placeholder bonito
-  wrap.innerHTML = `<div class="foto-box"><img id="laFoto" alt="instrumento"></div>`;
-  const img = document.getElementById("laFoto");
-  img.onerror = ()=>{
-    wrap.innerHTML =
-      `<div class="foto-placeholder" style="background:linear-gradient(135deg,${col},${sombra(col)})">
-         <div class="big">📷</div>
-         <div>Foto pendiente</div>
-         <div class="nm">Coloca <b>imagenes/${actual.img}</b><br>¡Mientras, adivina con la pista! 👇</div>
-       </div>`;
-  };
-  img.src = "imagenes/" + actual.img;
+  // MODO DESCRIPCIÓN: mostramos la pista grande como protagonista (sin foto)
+  wrap.innerHTML =
+    `<div class="foto-placeholder" style="background:linear-gradient(135deg,${col},${sombra(col)})">
+       <div class="big">🔎</div>
+       <div style="font-size:1.05rem;font-weight:700;line-height:1.4;padding:0 6px;">${actual.pista}</div>
+       <div class="nm">¿Qué instrumento / patrón es? Adívinalo 👇</div>
+     </div>`;
 }
 function sombra(hex){
   // oscurece un poco el color para el degradado
@@ -367,7 +362,7 @@ function renderPalabra(){
     }
     cont.appendChild(slot);
   }
-  document.getElementById("pista").textContent = "🔎 " + actual.pista;
+  document.getElementById("pista").textContent = "";
 }
 
 /* ============ TECLADO ============ */
